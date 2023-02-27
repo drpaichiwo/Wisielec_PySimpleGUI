@@ -2,7 +2,6 @@
 
 import PySimpleGUI as sg
 import random
-import time
 from word_dictionary import words
 from hangman_art import hangman_art
 
@@ -14,7 +13,10 @@ layout = [
     [sg.Text("użyte litery", font=font_used)],
     [sg.Text("", key="-USED-LETTERS-", font=font_used)],
     [sg.Text("życia", font=font_used),
-     sg.Text("", key="-LIVES-", font="Young 16", text_color="green")],
+     sg.Text("", key="-LIVES-", font="Young 16", text_color="green"),
+     sg.Push(),
+     sg.Text("0", key="-POINTS-", font="Young 16", text_color="green"),
+     sg.Text("punkty", font=font_used)],
     [sg.Text("Podaj literę:", font=font_used)],
     [sg.Input("", size=(10, 1),
               enable_events=True,
@@ -46,6 +48,8 @@ def hangman():
     word_blanks = ["_"] * len(word)
     # number of tries
     lives = 10
+    # points
+    points = 0
     # letters already used
     guessed_letters = ""
 
@@ -90,7 +94,8 @@ def hangman():
                     # win condition
                     if "".join(word_blanks) == "".join(word_letters):
                         window["-OUT-"].update("Wygrałeś! Brawo!")
-                        time.sleep(2)
+                        points += 1
+                        window["-POINTS-"].update(str(points))
                         sg.popup("Wygrana, losuję nowe słowo", font=font_used)
                         hangman()
                 # lost condition
@@ -102,8 +107,7 @@ def hangman():
                     window["-WORD-"].update("".join(word_blanks), font="Young 24")
                     if lives == 0:
                         window["-OUT-"].update("Przegrałeś!")
-                        time.sleep(2)
-                        sg.popup("Przegrana. Losuję nowe słowo", font=font_used)
+                        sg.popup(f"Przegrana. Losuję nowe słowo, słowo to: {word}", font=font_used)
                         hangman()
             # output if letter already been chosen
             else:
